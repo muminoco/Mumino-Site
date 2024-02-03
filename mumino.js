@@ -1,3 +1,5 @@
+//HELLO WORLD
+
 // window.addEventListener("DOMContentLoaded", (event) => {
 //   let pageTransition = function () {
 //     gsap.to(".transition", {
