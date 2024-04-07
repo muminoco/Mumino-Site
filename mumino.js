@@ -45,29 +45,43 @@ window.addEventListener("DOMContentLoaded", (event) => {
   pageTransition();
 
   let navbarHide = function () {
-    let lastScrollTop = 0;
     const navbar = document.querySelector(".navbar_component");
+    let lastScrollTop = 0;
+    const offsetFromTop = 100;
+    const scrollThreshold = 10;
+    const debounceTime = 25;
+
+    function debounce(func, wait) {
+      let timeout;
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
+    }
+
+    function checkScroll() {
+      let currentScroll =
+        window.pageYOffset || document.documentElement.scrollTop;
+
+      if (currentScroll > lastScrollTop && currentScroll > offsetFromTop) {
+        navbar.style.transform = "translateY(-100%)";
+      } else if (lastScrollTop - currentScroll > scrollThreshold) {
+        navbar.style.transform = "translateY(0)";
+      }
+
+      lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+    }
 
     window.addEventListener(
       "scroll",
-      function () {
-        let currentScroll =
-          window.pageYOffset || document.documentElement.scrollTop;
-
-        if (currentScroll > lastScrollTop) {
-          // Scrolling down
-          navbar.style.transform = "translateY(-100%)";
-          navbar.style.transition = "transform 0.3s ease-in-out";
-        } else {
-          // Scrolling up
-          navbar.style.transform = "translateY(0)";
-        }
-        lastScrollTop = currentScroll <= 0 ? 0 : currentScroll; // For Mobile or negative scrolling
-      },
+      debounce(checkScroll, debounceTime),
       false
     );
   };
-
   navbarHide();
 
   const letterFade = $("[ani='letter-fade']");
